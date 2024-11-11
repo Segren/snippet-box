@@ -46,9 +46,13 @@ vendor:
 # BUILD
 # ==================================================================================== #
 
+current_time = $(shell date "+%Y-%m-%dT%H:%M:%S%z")
+git_description = $(shell git describe --always --dirty --tags --long)
+linker_flags = '-s -X main.buildTime=${current_time} -X main.version=${git_description}'
+
 ## build/api: build the cmd/api application
 .PHONY: build/web
 build/web: 
 	@echo 'Building cmd/web...'
-	go build -o=./bin/web ./cmd/web
-	GOOS=linux GOARCH=amd64 go build -o=./bin/linux_amd64/web ./cmd/web
+	go build -ldflags=${linker_flags} -o=./bin/web ./cmd/web
+	GOOS=linux GOARCH=amd64 go build -ldflags=${linker_flags} -o=./bin/linux_amd64/web ./cmd/web
