@@ -1,13 +1,12 @@
 package main
 
 import (
-	"crypto/tls"
 	"database/sql"
 	"flag"
 	"html/template"
 	"log"
-	"net/http"
 	"os"
+	"sync"
 	"time"
 
 	"github.com/Segren/snippetbox/internal/models"
@@ -26,6 +25,8 @@ type application struct {
 	templateCache  map[string]*template.Template
 	formDecoder    *form.Decoder
 	sessionManager *scs.SessionManager
+	addr           *string
+	wg             sync.WaitGroup
 }
 
 func main() {
@@ -64,25 +65,13 @@ func main() {
 		templateCache:  templateCache,
 		formDecoder:    formDecoder,
 		sessionManager: sessionManager,
+		addr:           addr,
 	}
 
-	tlsConfig := &tls.Config{
-		CurvePreferences: []tls.CurveID{tls.X25519, tls.CurveP256},
+	err = app.serve()
+	if err != nil {
+		errorLog.Fatal(err)
 	}
-
-	srv := &http.Server{
-		Addr:         *addr,
-		ErrorLog:     errorLog,
-		Handler:      app.routes(),
-		TLSConfig:    tlsConfig,
-		IdleTimeout:  time.Minute,
-		ReadTimeout:  5 * time.Second,
-		WriteTimeout: 10 * time.Second,
-	}
-
-	infoLog.Printf("Starting server on %s", *addr)
-	err = srv.ListenAndServeTLS("./tls/cert.pem", "./tls/key.pem")
-	errorLog.Fatal(err)
 }
 
 func openDB(dsn string) (*sql.DB, error) {
