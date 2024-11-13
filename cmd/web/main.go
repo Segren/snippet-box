@@ -37,7 +37,8 @@ type application struct {
 
 func main() {
 	addr := flag.String("addr", ":8080", "HTTP network address")
-	dsn := flag.String("dsn", "web:12345@/snippetbox?parseTime=true", "MySQL data source name")
+	dsn := flag.String("dsn", os.Getenv("DSN"), "MySQL data source name")
+	//dsn := flag.String("dsn", "web:12345@/snippetbox?parseTime=true", "MySQL data source name")
 
 	// булево для отображения версии проекта и выхода
 	displayVersion := flag.Bool("version", false, "Display version information and exit")

@@ -56,3 +56,18 @@ build/web:
 	@echo 'Building cmd/web...'
 	go build -ldflags=${linker_flags} -o=./bin/web ./cmd/web
 	GOOS=linux GOARCH=amd64 go build -ldflags=${linker_flags} -o=./bin/linux_amd64/web ./cmd/web
+
+# ==================================================================================== # 
+# DOCKER 
+# ==================================================================================== #
+
+## docker/build: build the Docker image
+.PHONY: docker/image
+docker/image:
+	@echo 'Building Docker image...'
+	docker-compose build
+
+## docker/run: run the Docker container
+.PHONY: docker/run
+docker/run:
+	docker-compose up
