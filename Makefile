@@ -24,7 +24,8 @@ run/web:
 ## audit: tidy dependencies and format, vet and test all code
 .PHONY: audit 
 audit: vendor
-	@echo 'Tidying and verifying module dependencies...' go mod tidy
+	@echo 'Tidying and verifying module dependencies...' 
+	go mod tidy
 	go mod verify
 	@echo 'Formatting code...'
 	go fmt ./...
